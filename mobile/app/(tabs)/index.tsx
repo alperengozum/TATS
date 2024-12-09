@@ -10,7 +10,7 @@ import * as Sharing from 'expo-sharing';
 import {Progress, ProgressFilledTrack} from "@/components/ui/progress";
 import {Svg, Circle} from 'react-native-svg';
 import {useCompressedStore, ICompressedFile} from "@/store/CompressedStore";
-import CompressedFilesActionSheet from "@/components/actioonsheets/CompressedFilesActionSheet";
+import CompressedFilesActionSheet from "@/components/actionsheets/CompressedFilesActionSheet";
 import {SwipeGesture} from "react-native-swipe-gesture-handler";
 import LottieView from 'lottie-react-native';
 

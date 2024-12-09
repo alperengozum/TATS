@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Yemekhane-ai",
-    "slug": "yemekhane-ai",
+    "name": "TATS",
+    "slug": "TATS",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,14 +14,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.alperengozum.yemekhaneai"
+      "bundleIdentifier": "com.yemekhaneai"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.alperengozum.yemekhaneai",
+      "package": "com.yemekhaneai",
       "versionCode": 110
     },
     "web": {
