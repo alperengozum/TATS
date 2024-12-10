@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "42181384282",
+    "project_id": "tats-izu",
+    "storage_bucket": "tats-izu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:42181384282:android:a629898f9b174282b0e063",
+        "android_client_info": {
+          "package_name": "com.yemekhaneai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgaHZETXc83HVRSGMwVZcdurPxyK4GLxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -110,9 +110,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.alperengozum.yemekhaneai'
+    namespace 'com.yemekhaneai'
     defaultConfig {
-        applicationId 'com.alperengozum.yemekhaneai'
+        applicationId 'com.yemekhaneai'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 110
