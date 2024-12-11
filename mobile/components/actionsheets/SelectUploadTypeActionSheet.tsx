@@ -10,7 +10,12 @@ import {
 import {Text} from "@/components/ui/text";
 import {HStack} from "@/components/ui/hstack";
 
-export default function SelectUploadTypeActionSheet({ isOpen, setIsOpen, setUploadType, setIsUrlModalVisible }) {
+export default function SelectUploadTypeActionSheet({ isOpen, setIsOpen, setUploadType, setIsUrlModalVisible }: {
+	isOpen: boolean,
+	setIsOpen: (isOpen: boolean) => void,
+	setUploadType: (uploadType: string) => void,
+	setIsUrlModalVisible: (isVisible: boolean) => void
+}) {
 	return (
 		<UIActionsheet isOpen={isOpen} onClose={() => setIsOpen(false)}>
 			<ActionsheetBackdrop onPress={() => setIsOpen(false)} />

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {MotiView, MotiText} from "moti";
 import {Dimensions, Pressable, ActivityIndicator, Text, TextInput, View, Modal, TouchableOpacity} from "react-native";
-import CompressWellIcon from "@/components/icons/CompressWellIcon";
 import {Heading} from "@/components/ui/heading";
 import {Easing} from "react-native-reanimated";
 import * as DocumentPicker from 'expo-document-picker';
@@ -9,13 +8,11 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import {Progress, ProgressFilledTrack} from "@/components/ui/progress";
-import {Svg, Circle} from 'react-native-svg';
 import {useCompressedStore, ICompressedFile} from "@/store/CompressedStore";
-import CompressedFilesActionSheet from "@/components/actionsheets/CompressedFilesActionSheet";
-import LottieView from 'lottie-react-native';
 import {HStack} from "@/components/ui/hstack";
 import {Button, ButtonText} from "@/components/ui/button";
 import SelectUploadTypeActionSheet from "@/components/actionsheets/SelectUploadTypeActionSheet";
+import {Image} from "@/components/ui/image";
 
 export default function TabOneScreen() {
 	const {width, height} = Dimensions.get('window');
@@ -46,7 +43,7 @@ export default function TabOneScreen() {
 			default:
 				break;
 		}
-		}, [uploadType]);
+	}, [uploadType]);
 
 	const isValidUrl = (url: string) => {
 		const pattern = new RegExp('^(https?:\\/\\/|ftp:\\/\\/)?' + // protocol
@@ -147,38 +144,32 @@ export default function TabOneScreen() {
 	return (
 		<View className={"w-full h-full"}>
 			<MotiView className={"w-[100vw] h-[100vh] flex-1 flex items-center justify-center"}
-			          from={{backgroundColor: "#E0F2FE"}}
-			          animate={{backgroundColor: "#BAE6FD"}}
+			          from={{backgroundColor: "#fee0eb"}}
+			          animate={{backgroundColor: "#ffccdc"}}
 			          transition={{type: 'timing', duration: 3000}}>
 				<Pressable onPress={onUploadPress} className={"justify-center items-center"}>
-					<MotiText className={"text-base font-medium text-lightBlue-600 pb-3 z-10"}
+					<MotiText className={"text-base font-medium text-rose-600 pb-10 z-10"}
 					          from={{scale: 1}}
 					          animate={{scale: !loading ? 1.5 : 1}}
 					          transition={{type: 'timing', duration: 1000, loop: true, easing: customEasing}}>
-						Tap to upload
+						Yüklemek için tıkla
 					</MotiText>
-					<MotiView className={"rounded-b-full static"}>
+					<MotiView className={"rounded-full flex h-30"}>
 						<MotiView
 							from={{scale: 1}}
 							animate={{scale: 1.2}}
 							transition={{type: 'timing', duration: 1000, loop: true, easing: customEasing}}
-							style={{position: 'absolute', zIndex: -1}}
+							className={"rounded-full"}
 						>
-							<Svg height={width / 2} width={width / 2}>
-								<Circle cx="50%" cy="50%" r="50%" fill="#E0F2FE"/>
-							</Svg>
+							<Image source={require('../../assets/images/Yemekhane.png')} className={"h-60 w-60 rounded-full"} alt={"yemekhane"}/>
 						</MotiView>
-						<View className={"rounded-b-full overflow-hidden"}>
-							<CompressWellIcon width={width / 2} height={width / 2}/>
-						</View>
 					</MotiView>
 				</Pressable>
 				<MotiView className={"flex px-[10%] pt-10"}>
 					<View>
-						<Heading className={"racking-widest text-lightBlue-700"} size={"2xl"}>Select Image,</Heading>
-						<Heading className={"tracking-widest text-lightBlue-700"} size={"2xl"}>Video or Audio for</Heading>
+						<Heading className={"racking-widest text-rose-700"} size={"2xl"}>Tepsi analizi için</Heading>
 					</View>
-					<Heading className={"tracking-[0.2rem] text-lightBlue-900 pt-5"} size={"3xl"}>Compress Well.</Heading>
+					<Heading className={"tracking-[0.2rem] text-rose-900 pt-5"} size={"3xl"}>Resim yükleyin.</Heading>
 				</MotiView>
 				{loading && (
 					<ActivityIndicator size="large" color="#0EA5E9"/>
@@ -188,22 +179,6 @@ export default function TabOneScreen() {
 						<ProgressFilledTrack/>
 					</Progress>
 				)}
-				<MotiView className={"absolute h-20 bottom-0"}>
-					<LottieView
-						source={require("../../assets/lottie/swipe-up.json")}
-						style={{
-							position: 'absolute',
-							bottom: 0,
-							width: '100%',
-							height: 40
-						}}
-						autoPlay
-						loop/>
-					<MotiText className={"text-sm font-medium text-lightBlue-600 pb-3 z-10"}>
-						Swipe up to view compressed files
-					</MotiText>
-				</MotiView>
-				<CompressedFilesActionSheet isOpen={isActionSheetOpen} setIsOpen={setIsActionSheetOpen}/>
 			</MotiView>
 			<SelectUploadTypeActionSheet
 				isOpen={isUploadTypeActionSheetOpen}
