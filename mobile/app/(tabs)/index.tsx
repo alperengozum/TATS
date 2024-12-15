@@ -15,7 +15,6 @@ import SelectUploadTypeActionSheet from "@/components/actionsheets/SelectUploadT
 import {Image} from "@/components/ui/image";
 
 export default function TabOneScreen() {
-	const {width, height} = Dimensions.get('window');
 	const customEasing = Easing.bezier(0.37, 0, 0.63, 1);
 	const [loading, setLoading] = useState(false);
 	const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
@@ -25,7 +24,6 @@ export default function TabOneScreen() {
 	const [ftpUrl, setFtpUrl] = useState('');
 	const [uploadType, setUploadType] = useState<string | undefined>('');
 	const [isUploadTypeActionSheetOpen, setIsUploadTypeActionSheetOpen] = useState(false);
-	const addCompressedFile = useCompressedStore((state) => state.addCompressedFile);
 
 	useEffect(() => {
 		switch (uploadType) {
@@ -70,7 +68,6 @@ export default function TabOneScreen() {
 				createdAt: new Date(),
 				updatedAt: new Date()
 			};
-			addCompressedFile(compressedFile);
 			if (await Sharing.isAvailableAsync()) {
 				await Sharing.shareAsync(url);
 			} else {
@@ -148,7 +145,7 @@ export default function TabOneScreen() {
 			          animate={{backgroundColor: "#ffccdc"}}
 			          transition={{type: 'timing', duration: 3000}}>
 				<Pressable onPress={onUploadPress} className={"justify-center items-center"}>
-					<MotiText className={"text-base font-medium text-rose-600 pb-10 z-10"}
+					<MotiText className={"text-base font-medium text-rose-600 -ml-1 pb-10 z-10"}
 					          from={{scale: 1}}
 					          animate={{scale: !loading ? 1.5 : 1}}
 					          transition={{type: 'timing', duration: 1000, loop: true, easing: customEasing}}>
@@ -157,9 +154,9 @@ export default function TabOneScreen() {
 					<MotiView className={"rounded-full flex h-30"}>
 						<MotiView
 							from={{scale: 1}}
-							animate={{scale: 1.2}}
+							animate={{scale: 1.1}}
 							transition={{type: 'timing', duration: 1000, loop: true, easing: customEasing}}
-							className={"rounded-full"}
+							className={"rounded-full border-4 border-gray-600"}
 						>
 							<Image source={require('../../assets/images/Yemekhane.png')} className={"h-60 w-60 rounded-full"} alt={"yemekhane"}/>
 						</MotiView>
