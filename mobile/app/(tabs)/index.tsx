@@ -97,6 +97,7 @@ export default function TabOneScreen() {
 	};
 
 	const handleTakenAtSubmit = async () => {
+		if(serverLoading) return;
 		setLoading(true);
 		setServerLoading(true)
 		setIsModalVisible(false)
@@ -293,7 +294,7 @@ export default function TabOneScreen() {
 									onChangeText={setTakenAt}
 									value={takenAt}
 								/>
-								<Button onPress={handleTakenAtSubmit} disabled={!serverLoading}>
+								<Button onPress={handleTakenAtSubmit} disabled={serverLoading}>
 									<ButtonText>Submit</ButtonText>
 								</Button>
 							</TouchableOpacity>
