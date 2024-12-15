@@ -7,6 +7,8 @@ export interface IMealRequest {
 
 // Response
 export interface IMealAnalysis {
+	id: string;
+	image: string;
 	createdAt: number;
 	meals: IMeal[];
 	totalCalories: number;

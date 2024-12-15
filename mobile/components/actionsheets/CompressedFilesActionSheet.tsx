@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, Pressable, ActivityIndicator} from 'react-native';
 import {FlashList} from '@shopify/flash-list';
-import {ICompressedFile, useCompressedStore} from '@/store/CompressedStore';
+import {ICompressedFile, useCompressedStore} from '@/store/MealAnalysisStore';
 import {
 	ActionsheetBackdrop,
 	ActionsheetContent,
