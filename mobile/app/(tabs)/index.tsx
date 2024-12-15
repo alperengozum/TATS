@@ -1,7 +1,16 @@
-// mobile/app/(tabs)/index.tsx
 import React, {useEffect, useState} from 'react';
 import {MotiView, MotiText} from "moti";
-import {Dimensions, Pressable, ActivityIndicator, Text, TextInput, View, Modal, TouchableOpacity} from "react-native";
+import {
+	Dimensions,
+	Pressable,
+	ActivityIndicator,
+	Text,
+	TextInput,
+	View,
+	Modal,
+	TouchableOpacity,
+	Alert
+} from "react-native";
 import {Heading} from "@/components/ui/heading";
 import {Easing} from "react-native-reanimated";
 import * as DocumentPicker from 'expo-document-picker';
@@ -26,13 +35,16 @@ export default function TabOneScreen() {
 	moment.locale('tr');
 	const customEasing = Easing.bezier(0.37, 0, 0.63, 1);
 	const [loading, setLoading] = useState(false);
+	const [serverLoading, setServerLoading] = useState(false);
 	const [isActionSheetOpen, setIsActionSheetOpen] = useState(false);
 	const [progress, setProgress] = useState(0);
 	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [isUrlModalVisible, setIsUrlModalVisible] = useState(false);
 	const [url, setUrl] = useState('');
 	const [ftpUrl, setFtpUrl] = useState('');
 	const [uploadType, setUploadType] = useState<string | undefined>('');
 	const [isUploadTypeActionSheetOpen, setIsUploadTypeActionSheetOpen] = useState(false);
+	const [takenAt, setTakenAt] = useState(new Date().toISOString().split('T')[0]);
 	const addMealAnalysis = useMealAnalysisStore((state) => state.addMealAnalysis);
 	const router = useRouter();
 
@@ -41,6 +53,7 @@ export default function TabOneScreen() {
 			setIsActionSheetOpen(true);
 		}
 	}
+
 	useEffect(() => {
 		switch (uploadType) {
 			case 'gallery':
@@ -76,28 +89,35 @@ export default function TabOneScreen() {
 	const handleUrlSubmit = async () => {
 		if (isValidUrl(url)) {
 			setLoading(true);
-			setIsModalVisible(false);
-			await sendImageToServer(url);
-			setLoading(false);
+			setIsUrlModalVisible(false);
+			setIsModalVisible(true);
 		} else {
 			alert('Invalid URL');
 		}
 	};
 
+	const handleTakenAtSubmit = async () => {
+		setLoading(true);
+		setServerLoading(true)
+		setIsModalVisible(false)
+		await sendImageToServer(url);
+		setUploadType(undefined);
+		setUrl('');
+		setServerLoading(false);
+		setLoading(false);
+	};
+
 	const handleGalleryUpload = async () => {
 		setLoading(true);
-		setIsModalVisible(false);
 		const response = await DocumentPicker.getDocumentAsync({type: ["image/*"]});
 		if (response.canceled) {
 			setLoading(false);
 			return;
 		}
-		response.assets?.forEach(async (asset: DocumentPicker.DocumentPickerAsset) => {
-			await sendImageToServer(asset.uri);
-			setLoading(false);
-		});
-
-		setUploadType(undefined);
+		if(response.assets && response.assets.length >=1){
+			setUrl(response.assets[0].uri);
+			setIsModalVisible(true);
+		}
 	};
 
 	const handleCameraUpload = async () => {
@@ -113,28 +133,32 @@ export default function TabOneScreen() {
 		});
 		if (!result.canceled) {
 			setLoading(true);
-			setIsModalVisible(false);
-			await sendImageToServer(result.assets[0].uri);
-			setLoading(false);
+			setUrl(result.assets[0].uri)
+			setIsModalVisible(true);
 		}
-		setUploadType(undefined);
 	};
 
 	const sendImageToServer = async (uri: string) => {
 		let base64: string;
 
-		if (uri.startsWith('file://')) {
-			base64 = await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
-		} else {
-			const response = await fetch(uri);
-			const blob = await response.blob();
-			base64 = await new Promise<string>((resolve, reject) => {
-				const reader = new FileReader();
-				reader.onloadend = () => resolve(reader.result as string);
-				reader.onerror = reject;
-				reader.readAsDataURL(blob);
-			});
-			base64 = base64.split(',')[1];
+		try {
+			if (uri.startsWith('file://')) {
+				base64 = await FileSystem.readAsStringAsync(uri, {encoding: FileSystem.EncodingType.Base64});
+			} else {
+				const response = await fetch(uri);
+				const blob = await response.blob();
+				base64 = await new Promise<string>((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onloadend = () => resolve(reader.result as string);
+					reader.onerror = reject;
+					reader.readAsDataURL(blob);
+				});
+				base64 = base64.split(',')[1];
+			}
+		} catch (error) {
+			console.error('Error reading file:', error);
+			Alert.alert('Resmi alırken bir hatayla karşılaşıldı:', error?.message);
+			return;
 		}
 
 		try {
@@ -143,6 +167,7 @@ export default function TabOneScreen() {
 				id: '1',
 				image: base64,
 				createdAt: new Date().getTime(),
+				takenAt: new Date(takenAt).getTime(),
 				meals: [
 					{
 						name: 'Test Meal',
@@ -184,13 +209,14 @@ export default function TabOneScreen() {
 			addMealAnalysis(result);
 			router.push({
 				pathname: '/modal',
-				params: { result: JSON.stringify(result) }
+				params: {result: JSON.stringify(result)}
 			});
 		} catch (error) {
 			console.error('Error uploading image:', error);
 		}
 		setUploadType(undefined);
 	};
+
 	return (
 		<View className={"w-full h-full"}>
 			<AnimatePresence>
@@ -241,23 +267,53 @@ export default function TabOneScreen() {
 						isOpen={isUploadTypeActionSheetOpen}
 						setIsOpen={setIsUploadTypeActionSheetOpen}
 						setUploadType={setUploadType}
-						setIsUrlModalVisible={setIsModalVisible}
+						setIsUrlModalVisible={setIsUrlModalVisible}
 					/>
 					<Modal
 						animationType="slide"
 						transparent={true}
 						visible={isModalVisible}
-						onRequestClose={() => setIsModalVisible(false)}
+						onRequestClose={handleTakenAtSubmit}
 					>
 						<TouchableOpacity
 							style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)'}}
-							onPress={() => setIsModalVisible(false)}>
+							onPress={handleTakenAtSubmit}>
+							<TouchableOpacity activeOpacity={1}
+							                  style={{width: 300, padding: 20, backgroundColor: 'white', borderRadius: 10}}
+							                  onPress={(e) => e.stopPropagation()}>
+								<HStack className={"flex justify-between items-center align-middle pb-4"}>
+									<Text style={{fontSize: 18, fontWeight: 'bold'}}>Tepsinin resminin çekilme tarihini giriniz.</Text>
+									<Button variant={"link"} onPress={handleTakenAtSubmit}>
+										<ButtonText>X</ButtonText>
+									</Button>
+								</HStack>
+								<TextInput
+									style={{height: 40, borderColor: 'gray', borderWidth: 1, marginTop: 20, paddingHorizontal: 10}}
+									placeholder="Enter Date (YYYY-MM-DD)"
+									onChangeText={setTakenAt}
+									value={takenAt}
+								/>
+								<Button onPress={handleTakenAtSubmit} disabled={!serverLoading}>
+									<ButtonText>Submit</ButtonText>
+								</Button>
+							</TouchableOpacity>
+						</TouchableOpacity>
+					</Modal>
+					<Modal
+						animationType="slide"
+						transparent={true}
+						visible={isUrlModalVisible}
+						onRequestClose={() => setIsUrlModalVisible(false)}
+					>
+						<TouchableOpacity
+							style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)'}}
+							onPress={() => setIsUrlModalVisible(false)}>
 							<TouchableOpacity activeOpacity={1}
 							                  style={{width: 300, padding: 20, backgroundColor: 'white', borderRadius: 10}}
 							                  onPress={(e) => e.stopPropagation()}>
 								<HStack className={"flex justify-between items-center align-middle pb-4"}>
 									<Text style={{fontSize: 18, fontWeight: 'bold'}}>Enter URL</Text>
-									<Button variant={"link"} onPress={() => setIsModalVisible(false)}>
+									<Button variant={"link"} onPress={() => setIsUrlModalVisible(false)}>
 										<ButtonText>X</ButtonText>
 									</Button>
 								</HStack>

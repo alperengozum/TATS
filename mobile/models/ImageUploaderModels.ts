@@ -10,6 +10,7 @@ export interface IMealAnalysis {
 	id: string;
 	image: string;
 	createdAt: number;
+	takenAt: number;
 	meals: IMeal[];
 	totalCalories: number;
 	totalPrice: number;
