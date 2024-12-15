@@ -1,0 +1,10 @@
+path: ./  # dataset root dir
+train: ./images/train  # train images (relative to 'path')
+val: ./images/train  # val images (relative to 'path')
+
+# Classes
+names:
+  0: AnaYemek
+  1: YardimciYemek
+  2: Ekmek
+  3: Icecek
