@@ -1,10 +1,13 @@
-path: ./  # dataset root dir
-train: ./images/train  # train images (relative to 'path')
-val: ./images/train  # val images (relative to 'path')
+train: ./data/datasets/train/images
+val: ./data/datasets/valid/images
+test: ./data/datasets/test/images
 
-# Classes
-names:
-  0: AnaYemek
-  1: YardimciYemek
-  2: Ekmek
-  3: Icecek
+nc: 4
+names: ['AnaYemek', 'Ekmek', 'Icecek', 'YardimciYemek']
+
+roboflow:
+  workspace: tepsi-analiz
+  project: food-category
+  version: 3
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/tepsi-analiz/food-category/dataset/3
