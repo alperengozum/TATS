@@ -1,8 +1,8 @@
 from ultralytics import YOLO
 import numpy as np
 
-model = YOLO("./runs/classify/train2/weights/last.pt")
-results = model('data/val/Diger/12_jpg.rf.277ec929fb78d3030ec2ca071961f292.jpg')
+model = YOLO("./runs/classify/train3/weights/last.pt")
+results = model('data/test/Su/399_jpg.rf.b48d562cd95e74fa3693ab0557e74249.jpg')
 
 names_dict = results[0].names
 
