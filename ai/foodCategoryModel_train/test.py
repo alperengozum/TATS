@@ -3,12 +3,12 @@ from ultralytics import YOLO
 import cv2
 import math
 
-model_path = os.path.join('.', 'runs', 'detect', 'train8', 'weights', 'last.pt')
+model_path = os.path.join('.', 'runs', 'detect', 'train7', 'weights', 'last.pt')
 
 model = YOLO(model_path)
 
-#image_path = "data/datasets/train/images/4_jpeg.rf.eaa1ad931717afbb6681fc92729f7106.jpg"
-image_path = "data/old_datasets/images/train/4.jpeg"
+#image_path = "data/old_datasets2/train/images/4_jpeg.rf.eaa1ad931717afbb6681fc92729f7106.jpg"
+image_path = "data/old_datasets/images/train/5.jpeg"
 
 img = cv2.imread(image_path)
 h,w=img.shape[:2]

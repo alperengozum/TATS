@@ -8,6 +8,6 @@ names: ['AnaYemek', 'Ekmek', 'Icecek', 'YardimciYemek']
 roboflow:
   workspace: tepsi-analiz
   project: food-category
-  version: 3
+  version: 8
   license: CC BY 4.0
-  url: https://universe.roboflow.com/tepsi-analiz/food-category/dataset/3
+  url: https://universe.roboflow.com/tepsi-analiz/food-category/dataset/8
