@@ -44,18 +44,29 @@ export const handleImage = onRequest(async (request, response) => {
         snapshot.forEach(doc => {
           yemekListesi.push(doc.data());
         });
-
-        // Serhat'tan url alınacak
-        const externalResponse = await fetch("https://api.cortex.cerebrium.ai/v4/p-b1706473/fall-detection/run", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0SWQiOiJwLWIxNzA2NDczIiwiaWF0IjoxNjkyMjY4NjM4LCJleHAiOjIwMDc4NDQ2Mzh9.i4y2F5q8iPu8OqFHE8QBk3kkzdDmLios0VTxkx_J0W0ftkulVJZ3wGM97ySGTtT9avIveu5wmmIthF0-nfjXp7m8-I6RTg2NyIf9HNLvwIrAHF4g1oE5kIx8eEQc-WeGmOspLwKsF8_v4_xwN3yj-MDIDONVFFcvNik9Z6BFURGJEV0A0nz5g3fCgo13FUfQEI-mcXDuXz1vabC0xR60aisehP6pvSfjBDknOhW1s6Dvjbg-cULLT5EvcC7j71ud1sYYgaQqKZXH83uWaZvmscSr0YqlbNuCWNPEmouySpcJNwByJ_cZhy93gOpjljDHNvXRRRq2azclN24g8FalHQ"
-            },
-            body: JSON.stringify({ "image": image, "yemeklistesi": yemekListesi })
-        });
-
       
+        const externalResponse = await fetch("https://api.cortex.cerebrium.ai/v4/p-b1706473/fall-detection/run", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9qZWN0SWQiOiJwLWIxNzA2NDczIiwiaWF0IjoxNjkyMjY4NjM4LCJleHAiOjIwMDc4NDQ2Mzh9.i4y2F5q8iPu8OqFHE8QBk3kkzdDmLios0VTxkx_J0W0ftkulVJZ3wGM97ySGTtT9avIveu5wmmIthF0-nfjXp7m8-I6RTg2NyIf9HNLvwIrAHF4g1oE5kIx8eEQc-WeGmOspLwKsF8_v4_xwN3yj-MDIDONVFFcvNik9Z6BFURGJEV0A0nz5g3fCgo13FUfQEI-mcXDuXz1vabC0xR60aisehP6pvSfjBDknOhW1s6Dvjbg-cULLT5EvcC7j71ud1sYYgaQqKZXH83uWaZvmscSr0YqlbNuCWNPEmouySpcJNwByJ_cZhy93gOpjljDHNvXRRRq2azclN24g8FalHQ"
+          },
+          body: JSON.stringify({ "image": image, "yemeklistesi": yemekListesi })
+      });
+
+      const result: IYemekModel = await externalResponse.json();
+
+      // IYemekModel içindeki IMeal öğelerine erişim
+      result.meals.forEach((meal: IMeal) => {
+    
+  });
+
+      // Dönen verileri başka bir işlem için kullanın
+       // Örneğin, dönen verileri Firestore'a kaydedebilirsiniz
+     await db.collection("Processed_Yemek_Listesi").add(result);
+
+  response.status(200).json(result);
+       
     
     } catch (error) {
         logger.error("Error processing image", error);
