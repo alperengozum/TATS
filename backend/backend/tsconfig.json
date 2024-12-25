@@ -1,15 +1,18 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "esModuleInterop": true,
-    "moduleResolution": "nodenext",
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "outDir": "lib",
-    "sourceMap": true,
-    "strict": true,
-    "target": "es2017"
-  },
+  "rootDir": "src",
+  "outDir": "dist",
+  "target": "es2022",
+  "module": "NodeNext",
+  "sourceMap": true,
+  "allowJs": false,
+  "alwaysStrict": true,
+  "resolveJsonModule": true,
+  "noImplicitAny": true,
+  "strictNullChecks": true,
+  "esModuleInterop": true,
+  "skipLibCheck": true
+},
   "compileOnSave": true,
   "include": [
     "src"
