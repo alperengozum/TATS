@@ -164,7 +164,7 @@ export default function TabOneScreen() {
 
 		try {
 			// TODO: Implement the actual API call
-			const result: IMealAnalysis = {
+/*			const result: IMealAnalysis = {
 				id: '1',
 				image: base64,
 				createdAt: new Date().getTime(),
@@ -206,7 +206,19 @@ export default function TabOneScreen() {
 				monthlyTotalCalories: 0,
 				monthlyTotalCost: 0,
 				monthlyTotalSavings: 0
-			};
+			};*/
+			const result: IMealAnalysis = await fetch('https://handleimage-5f62hpktuq-uc.a.run.app', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					image: base64,
+					takenAt: new Date(takenAt).getTime(),
+					createdAt: new Date().getTime()
+				})
+			}).then((response) => response.json());
+
 			addMealAnalysis(result);
 			router.push({
 				pathname: '/modal',
