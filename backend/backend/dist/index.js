@@ -183,70 +183,49 @@ function checkMenus(menuList) {
     };
 }
 async function calculateMonthlyCalori(documentNames) {
-    let monthlyCalori = 0; // Toplam kalori
+    let monthlyCalori = 0;
     const promises = documentNames.map(async (docName) => {
-        try {
-            const doc = await db.collection("Yemek_Listesi").doc(docName).get();
-            if (doc.exists) {
-                const dailyCalori = doc.data().dailyCalori || 0; // `dailyCalori` yoksa 0 kabul et
-                return dailyCalori;
-            }
-            else {
-                return 0; // Döküman mevcut değilse 0 ekle
-            }
+        const doc = await db.collection("Yemek_Listesi").doc(docName).get();
+        if (doc.exists) {
+            const dailyCalori = doc.data().dailyCalori || 0;
+            return dailyCalori;
         }
-        catch (error) {
-            console.error(`Hata: ${docName} için veri alınamadı.`, error);
-            return 0; // Hata durumunda 0 ekle
+        else {
+            return 0;
         }
     });
-    // Tüm `promises` tamamlandıktan sonra sonuçları topla
     const dailyCalories = await Promise.all(promises);
     monthlyCalori = dailyCalories.reduce((sum, value) => sum + value, 0);
     return monthlyCalori;
 }
 async function calculateMonthlyMenuPrice(documentNames) {
-    let monthlyMenu = 0; // Toplam kalori
+    let monthlyMenu = 0;
     const promises = documentNames.map(async (docName) => {
-        try {
-            const doc = await db.collection("Yemek_Listesi").doc(docName).get();
-            if (doc.exists) {
-                const dailyMenu = doc.data().dailyMenuPrice || 0; // `dailyCalori` yoksa 0 kabul et
-                return dailyMenu;
-            }
-            else {
-                return 0; // Döküman mevcut değilse 0 ekle
-            }
+        const doc = await db.collection("Yemek_Listesi").doc(docName).get();
+        if (doc.exists) {
+            const dailyMenu = doc.data().dailyMenuPrice || 0;
+            return dailyMenu;
         }
-        catch (error) {
-            console.error(`Hata: ${docName} için veri alınamadı.`, error);
-            return 0; // Hata durumunda 0 ekle
+        else {
+            return 0;
         }
     });
-    // Tüm `promises` tamamlandıktan sonra sonuçları topla
     const dailyMenus = await Promise.all(promises);
     monthlyMenu = dailyMenus.reduce((sum, value) => sum + value, 0);
     return monthlyMenu;
 }
 async function calculateMonthlyTotalPrice(documentNames) {
-    let monthlyTotalPrice = 0; // Toplam kalori
+    let monthlyTotalPrice = 0;
     const promises = documentNames.map(async (docName) => {
-        try {
-            const doc = await db.collection("Yemek_Listesi").doc(docName).get();
-            if (doc.exists) {
-                const dailyTotal = doc.data().dailyTotalPrice || 0; // `dailyCalori` yoksa 0 kabul et
-                return dailyTotal;
-            }
-            else {
-                return 0; // Döküman mevcut değilse 0 ekle
-            }
+        const doc = await db.collection("Yemek_Listesi").doc(docName).get();
+        if (doc.exists) {
+            const dailyTotal = doc.data().dailyTotalPrice || 0;
+            return dailyTotal;
         }
-        catch (error) {
-            console.error(`Hata: ${docName} için veri alınamadı.`, error);
-            return 0; // Hata durumunda 0 ekle
+        else {
+            return 0;
         }
     });
-    // Tüm `promises` tamamlandıktan sonra sonuçları topla
     const dailyTotals = await Promise.all(promises);
     monthlyTotalPrice = dailyTotals.reduce((sum, value) => sum + value, 0);
     return monthlyTotalPrice;
@@ -334,7 +313,7 @@ async function calculateTotalPriceFromOutput(output) {
 function getDaysOfCurrentMonth() {
     const now = new Date();
     const year = now.getFullYear();
-    const month = now.getMonth() + 1; // Aylar 0'dan başladığı için 1 ekliyoruz
+    const month = now.getMonth() + 1;
     const daysInMonth = new Date(year, month, 0).getDate();
     const daysList = [];
     for (let day = 1; day <= daysInMonth; day++) {
@@ -344,15 +323,4 @@ function getDaysOfCurrentMonth() {
     }
     return daysList;
 }
-/*
-
-VERİ EKLEME
-    await db.collection("Yemek_Listesi").doc("yemekList").collection("01.12.2024").doc("meal1").set({
-        yemekKategorisi: "Yardımcı Yemek",
-        altKategori: "Çorba",
-        altAltKategori: "Çorba",
-        yemekAdi: "Mercimek Çorbası",
-        kalori: 155,
-      });
-      */ 
 //# sourceMappingURL=index.js.map
