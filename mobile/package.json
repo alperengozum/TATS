@@ -7,8 +7,7 @@
     "android": "../node_modules/.bin/expo run:android",
     "ios": "../node_modules/.bin/expo run:ios",
     "web": "DARK_MODE=media expo start --web",
-    "test": "../node_modules/.bin/jest --watchAll",
-    "postinstall": "../node_modules/.bin/patch-package"
+    "test": "../node_modules/.bin/jest --watchAll"
   },
   "jest": {
     "preset": "jest-expo"
