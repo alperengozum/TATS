@@ -29,139 +29,13 @@ const app_1 = require("firebase-admin/app");
 const https_1 = require("firebase-functions/v2/https");
 const logger = __importStar(require("firebase-functions/logger"));
 const firestore_1 = require("firebase-admin/firestore");
-//import { getFirestore, FieldValue } from "firebase-admin/firestore";
-//import { getMessaging } from "firebase-admin/messaging";
 const db = (0, firestore_1.getFirestore)();
-//const messaging = getMessaging();
 exports.handleImage = (0, https_1.onRequest)(async (request, response) => {
-    const menuList = [
-        {
-            yemekKategorisi: "Ana Yemek",
-            altKategori: "Etli",
-            altAltKategori: "Kırmızı Et",
-            yemekAdi: "İzmir Köfte",
-            kalori: 385
-        },
-        {
-            yemekKategorisi: "Ana Yemek",
-            altKategori: "Etli",
-            altAltKategori: "Beyaz Et",
-            yemekAdi: "Tavuk Şiş",
-            kalori: 320
-        },
-        {
-            yemekKategorisi: "Ana Yemek",
-            altKategori: "Vejetaryen",
-            altAltKategori: "Sebze",
-            yemekAdi: "Sebzeli Makarna",
-            kalori: 300
-        },
-        {
-            yemekKategorisi: "Ana Yemek",
-            altKategori: "Vejetaryen",
-            altAltKategori: "Bakliyat",
-            yemekAdi: "Mercimek Köftesi",
-            kalori: 250
-        },
-        {
-            yemekKategorisi: "Ana Yemek",
-            altKategori: "Etli",
-            altAltKategori: "Kırmızı Et",
-            yemekAdi: "Kuzu Güveç",
-            kalori: 450
-        },
-        {
-            yemekKategorisi: "Yardımcı Yemek",
-            altKategori: "Çorba",
-            altAltKategori: "Diğer",
-            yemekAdi: "Kremalı Sebze Çor.",
-            kalori: 120
-        },
-        {
-            yemekKategorisi: "Yardımcı Yemek",
-            altKategori: "Pilav",
-            altAltKategori: "Bulgur",
-            yemekAdi: "Bulgur Pilavı",
-            kalori: 200
-        },
-        {
-            yemekKategorisi: "Yardımcı Yemek",
-            altKategori: "Pilav",
-            altAltKategori: "Bulgur",
-            yemekAdi: "Bulgur Pilavı",
-            kalori: 200
-        },
-        {
-            yemekKategorisi: "Yardımcı Yemek",
-            altKategori: "Salata",
-            altAltKategori: "Yeşil",
-            yemekAdi: "Çoban Salata",
-            kalori: 90
-        },
-        {
-            yemekKategorisi: "Yardımcı Yemek",
-            altKategori: "Tatlı",
-            altAltKategori: "Şerbetli",
-            yemekAdi: "Baklava",
-            kalori: 300
-        },
-        {
-            yemekKategorisi: "Yardımcı Yemek",
-            altKategori: "Sebze",
-            altAltKategori: "Zeytinyağlı",
-            yemekAdi: "Zeytinyağlı Enginar",
-            kalori: 150
-        },
-        {
-            yemekKategorisi: "Yardımcı Yemek",
-            altKategori: "Meze",
-            altAltKategori: "Humus",
-            yemekAdi: "Humus",
-            kalori: 180
-        },
-        {
-            yemekKategorisi: "Yardımcı Yemek",
-            altKategori: "Sebze",
-            altAltKategori: "Zeytinyağlı",
-            yemekAdi: "Zeytinyağlı Enginar",
-            kalori: 150
-        },
-        {
-            yemekKategorisi: "Su",
-            altKategori: "Su",
-            altAltKategori: "Su",
-            yemekAdi: "Su",
-            kalori: 180
-        },
-        {
-            yemekKategorisi: "Ekmek",
-            altKategori: "Ekmek",
-            altAltKategori: "Ekmek",
-            yemekAdi: "Ekmek",
-            kalori: 180
-        },
-        {
-            yemekKategorisi: "Su",
-            altKategori: "Su",
-            altAltKategori: "Su",
-            yemekAdi: "Su",
-            kalori: 180
-        },
-        {
-            yemekKategorisi: "Ekmek",
-            altKategori: "Ekmek",
-            altAltKategori: "Ekmek",
-            yemekAdi: "Ekmek",
-            kalori: 180
-        }
-    ];
     if (request.method !== "POST") {
         response.status(405).send("Method Not Allowed");
         return;
     }
-    //const { image, takenAt, createdAt } = request.body;
     const { image, takenAt, createdAt } = request.body;
-    // Eksik alanları kontrol et
     if (!image) {
         response.status(400).send("Bad Request: Missing or invalid 'image'");
         return;
@@ -182,50 +56,60 @@ exports.handleImage = (0, https_1.onRequest)(async (request, response) => {
         },
         body: JSON.stringify({ "image": image })
     });
+    const date = new Date(createdAt);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    const formattedDate = `${day}.${month}.${year}`;
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const formattedTime = `${hours}:${minutes}`;
     const result = await externalResponse.json();
     const jsonString = result.result.yemeklistesi;
-    logger.info(jsonString);
-    checkMenus(jsonString);
+    const menuSummary = checkMenus(jsonString);
+    const menuName = menuSummary.combinedMenuName;
+    const totalMenuPrice = await calculateTotalPriceFromOutput(menuSummary);
     const meal2List = await generateMeal2List(jsonString);
-    console.log(meal2List);
-    const totalPrice = calculateTotalPrice(meal2List);
-    const totalCalories = calculateTotalCalories(meal2List);
+    const totalPrice = await calculateTotalPrice(meal2List);
+    const totalCalories = await calculateTotalCalories(meal2List);
+    await SaveToDatabase(totalMenuPrice, totalPrice, totalCalories, formattedDate);
+    const savings = totalPrice - totalMenuPrice;
+    const savingsPercentage = parseFloat(((savings / totalPrice) * 100).toFixed(2));
+    const documentNames = getDaysOfCurrentMonth();
+    logger.info("documentNames", documentNames);
+    const monthlyTotalCalories = await calculateMonthlyCalori(documentNames) + totalCalories;
+    const monthlyTotalMenu = await calculateMonthlyMenuPrice(documentNames);
+    const monthlyTotalPrice = await calculateMonthlyTotalPrice(documentNames);
+    const monthlyTotalSavings = monthlyTotalPrice - monthlyTotalMenu;
+    const monthlySavingsPercentage = parseFloat(((monthlyTotalSavings / monthlyTotalPrice) * 100).toFixed(2));
     const responseValue = {
         id: "1",
-        createdAt: createdAt,
+        createdAt: formattedDate,
         image: result.result.image,
         meals: meal2List,
-        takenAt: takenAt,
+        takenAt: formattedTime,
         totalCalories: totalCalories,
         totalPrice: totalPrice,
-        menuType: "1",
-        menuPrice: 1,
-        savingsPercentage: 1,
-        monthlyTotalCalories: 1,
-        monthlyTotalCost: 1,
-        monthlyTotalSavings: 1
+        menuType: menuName,
+        menuPrice: totalMenuPrice,
+        savingsPercentage: savingsPercentage,
+        monthlyTotalCalories: monthlyTotalCalories,
+        monthlyTotalCost: monthlyTotalMenu,
+        monthlyTotalSavings: monthlySavingsPercentage
     };
     response.status(200).send(JSON.stringify(responseValue));
 });
 function checkMenus(menuList) {
-    // Ana yemek ve yardımcı yemekleri ayır
     const mainDishes = menuList?.filter(item => item.yemekKategorisi === "Ana Yemek");
     const sideDishes = menuList?.filter(item => item.yemekKategorisi === "Yardımcı Yemek");
-    // Su ve ekmekleri ayır
     const waters = menuList?.filter(item => item.yemekKategorisi === "Su");
     const breads = menuList?.filter(item => item.yemekKategorisi === "Ekmek");
-    if (mainDishes.length < 1) {
-        console.error("Menüleri oluşturmak için yeterli ana yemek yok.");
-        return;
-    }
-    // Menülerin tutulacağı listeler
     const fixMenus = [];
-    const asafMenusEtli = [];
-    const asafMenusEtsiz = [];
-    const mustafaMenusEtsiz = [];
+    const menu2Etli = [];
+    const menu2Etsiz = [];
+    const menu3Etsiz = [];
     let remainingMainDishes = [...mainDishes];
     let remainingSideDishes = [...sideDishes];
-    // Fix Menüleri oluştur
     while (remainingMainDishes.length > 0 && remainingSideDishes.length >= 3) {
         fixMenus.push({
             mainDish: remainingMainDishes.shift(),
@@ -234,7 +118,6 @@ function checkMenus(menuList) {
             bread: breads.length > 0 ? breads.pop() : null
         });
     }
-    // Asaf Menüleri oluştur (Etli ve Etsiz olarak ayır)
     while (remainingMainDishes.length > 0 && remainingSideDishes.length >= 1) {
         const mainDish = remainingMainDishes.shift();
         const sideDish = remainingSideDishes.shift();
@@ -245,33 +128,128 @@ function checkMenus(menuList) {
             bread: breads.length > 0 ? breads.pop() : null
         };
         if (mainDish.altKategori === "Etli") {
-            asafMenusEtli.push(menu);
+            menu2Etli.push(menu);
         }
         else {
-            asafMenusEtsiz.push(menu);
+            menu2Etsiz.push(menu);
         }
     }
-    // Mustafa Menüleri oluştur (Sadece Etsiz)
     while (remainingMainDishes.length > 0) {
         const mainDish = remainingMainDishes.shift();
         if (mainDish.altKategori !== "Etli") {
-            mustafaMenusEtsiz.push({
+            menu3Etsiz.push({
                 mainDish,
                 water: waters.length > 0 ? waters.pop() : null,
                 bread: breads.length > 0 ? breads.pop() : null
             });
         }
         else {
-            // Eğer etli ana yemek varsa ve diğer menülere uymuyorsa ekstra olarak işaretlenir.
-            remainingMainDishes.unshift(mainDish); // Bu yemeği ekstra yemekler için bırak
+            remainingMainDishes.unshift(mainDish);
             break;
         }
     }
-    // Geri kalan yemekler ve su/ekmek
-    const extraMainDishes = remainingMainDishes; // Buradaki yemekler ekstra olacak
-    const extraSideDishes = remainingSideDishes;
-    const extraWaters = waters;
-    const extraBreads = breads;
+    const extraDishes = [...remainingMainDishes, ...remainingSideDishes, ...waters, ...breads];
+    const extraDishSummary = extraDishes.reduce((acc, dish) => {
+        acc[dish.yemekKategorisi] = (acc[dish.yemekKategorisi] || 0) + 1;
+        return acc;
+    }, {});
+    const extraDishList = Object.entries(extraDishSummary).map(([kategori, count]) => ({
+        kategori,
+        count
+    }));
+    const menusSummary = [
+        { menuName: "Fix Menü", count: fixMenus.length },
+        { menuName: "Menü 1", count: menu2Etli.length },
+        { menuName: "Menü 2", count: menu2Etsiz.length },
+        { menuName: "Menü 3", count: menu3Etsiz.length }
+    ];
+    let combinedMenuName = menusSummary
+        .filter(menu => menu.count > 0)
+        .map(menu => menu.menuName)
+        .join(" + ");
+    if (menusSummary.every(menu => menu.count === 0)) {
+        combinedMenuName = "-";
+    }
+    else if (combinedMenuName === "" && extraDishList.length > 0) {
+        combinedMenuName = "Ekstralar";
+    }
+    else if (extraDishList.length > 0) {
+        combinedMenuName += combinedMenuName ? " + Ekstralar" : "Ekstralar";
+    }
+    return {
+        combinedMenuName,
+        menusSummary,
+        extraDishList
+    };
+}
+async function calculateMonthlyCalori(documentNames) {
+    let monthlyCalori = 0; // Toplam kalori
+    const promises = documentNames.map(async (docName) => {
+        try {
+            const doc = await db.collection("Yemek_Listesi").doc(docName).get();
+            if (doc.exists) {
+                const dailyCalori = doc.data().dailyCalori || 0; // `dailyCalori` yoksa 0 kabul et
+                return dailyCalori;
+            }
+            else {
+                return 0; // Döküman mevcut değilse 0 ekle
+            }
+        }
+        catch (error) {
+            console.error(`Hata: ${docName} için veri alınamadı.`, error);
+            return 0; // Hata durumunda 0 ekle
+        }
+    });
+    // Tüm `promises` tamamlandıktan sonra sonuçları topla
+    const dailyCalories = await Promise.all(promises);
+    monthlyCalori = dailyCalories.reduce((sum, value) => sum + value, 0);
+    return monthlyCalori;
+}
+async function calculateMonthlyMenuPrice(documentNames) {
+    let monthlyMenu = 0; // Toplam kalori
+    const promises = documentNames.map(async (docName) => {
+        try {
+            const doc = await db.collection("Yemek_Listesi").doc(docName).get();
+            if (doc.exists) {
+                const dailyMenu = doc.data().dailyMenuPrice || 0; // `dailyCalori` yoksa 0 kabul et
+                return dailyMenu;
+            }
+            else {
+                return 0; // Döküman mevcut değilse 0 ekle
+            }
+        }
+        catch (error) {
+            console.error(`Hata: ${docName} için veri alınamadı.`, error);
+            return 0; // Hata durumunda 0 ekle
+        }
+    });
+    // Tüm `promises` tamamlandıktan sonra sonuçları topla
+    const dailyMenus = await Promise.all(promises);
+    monthlyMenu = dailyMenus.reduce((sum, value) => sum + value, 0);
+    return monthlyMenu;
+}
+async function calculateMonthlyTotalPrice(documentNames) {
+    let monthlyTotalPrice = 0; // Toplam kalori
+    const promises = documentNames.map(async (docName) => {
+        try {
+            const doc = await db.collection("Yemek_Listesi").doc(docName).get();
+            if (doc.exists) {
+                const dailyTotal = doc.data().dailyTotalPrice || 0; // `dailyCalori` yoksa 0 kabul et
+                return dailyTotal;
+            }
+            else {
+                return 0; // Döküman mevcut değilse 0 ekle
+            }
+        }
+        catch (error) {
+            console.error(`Hata: ${docName} için veri alınamadı.`, error);
+            return 0; // Hata durumunda 0 ekle
+        }
+    });
+    // Tüm `promises` tamamlandıktan sonra sonuçları topla
+    const dailyTotals = await Promise.all(promises);
+    monthlyTotalPrice = dailyTotals.reduce((sum, value) => sum + value, 0);
+    return monthlyTotalPrice;
 }
 const getPrice = async (documentName) => {
     const docRef = db.collection('Yemekhane_price').doc(documentName);
@@ -291,7 +269,7 @@ async function generateMeal2List(menuList) {
         const generalType = item.yemekKategorisi;
         const calories = item.kalori;
         if (!meal2Map[name]) {
-            const price = await getPrice(item.altKategori) || 0; // Fiyat bilgisi alınır
+            const price = await getPrice(item.altKategori) || 0;
             meal2Map[name] = {
                 quantity: 1,
                 name,
@@ -306,28 +284,65 @@ async function generateMeal2List(menuList) {
     }
     return Object.values(meal2Map);
 }
-// Toplam fiyat hesaplama metodu
-function calculateTotalPrice(mealList) {
+async function SaveToDatabase(dailyMenuPrice, dailyTotalPrice, dailyCalori, dailyDate) {
+    const docRef = db.collection("Yemek_Listesi").doc(dailyDate);
+    docRef.get().then((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            const updatedDailyMenuPrice = (data.dailyMenuPrice || 0) + dailyMenuPrice;
+            const updatedDailyTotalPrice = (data.dailyTotalPrice || 0) + dailyTotalPrice;
+            const updatedDailyCalori = (data.dailyCalori || 0) + dailyCalori;
+            docRef.set({
+                dailyMenuPrice: updatedDailyMenuPrice,
+                dailyTotalPrice: updatedDailyTotalPrice,
+                dailyCalori: updatedDailyCalori,
+            });
+        }
+        else {
+            docRef.set({
+                dailyMenuPrice: dailyMenuPrice,
+                dailyTotalPrice: dailyTotalPrice,
+                dailyCalori: dailyCalori,
+            });
+        }
+    });
+}
+async function calculateTotalPrice(mealList) {
     return mealList.reduce((total, meal) => total + meal.price * meal.quantity, 0);
 }
-// Toplam kalori hesaplama metodu
-function calculateTotalCalories(mealList) {
+async function calculateTotalCalories(mealList) {
     return mealList.reduce((total, meal) => total + meal.calories * meal.quantity, 0);
 }
-function transformJsonStringToFormattedList(jsonString) {
-    // Tek tırnakları çift tırnağa çevirerek JSON.parse edilebilir hale getiriyoruz
-    const validJsonString = jsonString.replace(/'/g, '"');
-    // JSON parse işlemi
-    const parsedData = JSON.parse(validJsonString);
-    logger.info(parsedData);
-    // Format dönüşümü
-    return parsedData.map((item) => ({
-        yemekKategorisi: item.yemekKategorisi,
-        altKategori: item.altKategori,
-        altAltKategori: item.altAltKategori,
-        yemekAdi: item.yemekAdi,
-        kalori: item.kalori,
-    }));
+async function calculateTotalPriceFromOutput(output) {
+    let total = 0;
+    for (const menu of output.menusSummary) {
+        if (menu.count > 0) {
+            const price = await getPrice(menu.menuName);
+            if (price !== null) {
+                total += price * menu.count;
+            }
+        }
+    }
+    for (const extraDish of output.extraDishList) {
+        const price = await getPrice(extraDish.kategori);
+        if (price !== null) {
+            total += price * extraDish.count;
+        }
+    }
+    return total;
+}
+function getDaysOfCurrentMonth() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // Aylar 0'dan başladığı için 1 ekliyoruz
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const daysList = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+        const formattedDay = String(day).padStart(2, '0');
+        const formattedMonth = String(month).padStart(2, '0');
+        daysList.push(`${formattedDay}.${formattedMonth}.${year}`);
+    }
+    return daysList;
 }
 /*
 
