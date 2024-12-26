@@ -206,7 +206,7 @@ export default function TabOneScreen() {
 				monthlyTotalCost: 0,
 				monthlyTotalSavings: 0
 			};*/
-			const result: IMealAnalysis = await fetch('https://handleimage-5f62hpktuq-uc.a.run.app', {
+			let result: IMealAnalysis = await fetch('https://handleimage-5f62hpktuq-uc.a.run.app', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -218,10 +218,11 @@ export default function TabOneScreen() {
 				})
 			}).then((response) => response.json());
 
+			result.id = Math.random().toString(36).slice(2);
 			addMealAnalysis(result);
 			router.push({
 				pathname: '/modal',
-				params: {result: JSON.stringify(result)}
+				params: {result: result.id}
 			});
 		} catch (error) {
 			console.error('Error uploading image:', error);

@@ -5,10 +5,13 @@ import {IMealAnalysis} from '@/models/ImageUploaderModels';
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "@/components/ui/image";
 import {adjustTime} from "@/utils/TimeUtils";
+import {useMealAnalysisStore} from "@/store/MealAnalysisStore";
 
 export default function ModalScreen() {
+	const mealAnalyses = useMealAnalysisStore((state) => state.mealAnalyses);
+
 	const {result} = useLocalSearchParams();
-	const mealAnalysis: IMealAnalysis = JSON.parse(result as string);
+	const mealAnalysis: IMealAnalysis = mealAnalyses.find((analysis) => analysis.id === result) as IMealAnalysis;
 
 	return (
 		<ScrollView style={styles.container}>

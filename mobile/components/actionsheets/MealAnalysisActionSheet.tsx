@@ -54,7 +54,7 @@ export default function MealAnalysisActionSheet({isOpen, setIsOpen}: {
 	const onPressItem = async (item: IMealAnalysis) => {
 		router.push({
 			pathname: '/modal',
-			params: {result: JSON.stringify(item)}
+			params: {result: item.id}
 		});
 		setIsOpen(false);
 	};
