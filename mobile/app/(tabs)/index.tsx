@@ -163,7 +163,6 @@ export default function TabOneScreen() {
 		}
 
 		try {
-			// TODO: Implement the actual API call
 /*			const result: IMealAnalysis = {
 				id: '1',
 				image: base64,
@@ -265,7 +264,7 @@ export default function TabOneScreen() {
 							<View>
 								<Heading className={"racking-widest text-rose-700"} size={"2xl"}>Tepsi analizi için</Heading>
 							</View>
-							<Heading className={"tracking-[0.2rem] text-rose-900 pt-5"} size={"3xl"}>Resim yükleyin.</Heading>
+							<Heading className={"tracking-[0.2rem] text-rose-900 pt-5"} size={"3xl"}>Görsel yükleyin.</Heading>
 						</MotiView>
 						{loading && (
 							<ActivityIndicator size="large" color="#be123c"/>

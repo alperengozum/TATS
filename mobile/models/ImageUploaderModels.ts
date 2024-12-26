@@ -9,8 +9,8 @@ export interface IMealRequest {
 export interface IMealAnalysis {
 	id: string;
 	image: string;
-	createdAt: number;
-	takenAt: number;
+	createdAt: string;
+	takenAt: string;
 	meals: IMeal[];
 	totalCalories: number;
 	totalPrice: number;

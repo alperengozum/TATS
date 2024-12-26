@@ -19,6 +19,7 @@ import {Button, ButtonIcon} from "@/components/ui/button";
 import {Heading} from "@/components/ui/heading";
 import {useRouter} from 'expo-router';
 import {IMealAnalysis} from "@/models/ImageUploaderModels";
+import {adjustTime} from "@/utils/TimeUtils";
 
 export default function MealAnalysisActionSheet({isOpen, setIsOpen}: {
 	isOpen: boolean,
@@ -88,7 +89,8 @@ export default function MealAnalysisActionSheet({isOpen, setIsOpen}: {
 														duration: 1000,
 													}}
 												/>
-												<Text className={"text-typography-500"}>{moment(item.createdAt).fromNow()}</Text>
+												<Text className={"text-typography-500"}>{item.createdAt}
+													{` / ${adjustTime(item.takenAt)}`}</Text>
 											</VStack>
 											{loadingFiles.includes(item.id) ? (
 												<ActivityIndicator size="small" color="#be123c"/>

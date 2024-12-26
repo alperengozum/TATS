@@ -4,6 +4,7 @@ import {useLocalSearchParams} from 'expo-router';
 import {IMealAnalysis} from '@/models/ImageUploaderModels';
 import {FlashList} from "@shopify/flash-list";
 import {Image} from "@/components/ui/image";
+import {adjustTime} from "@/utils/TimeUtils";
 
 export default function ModalScreen() {
 	const {result} = useLocalSearchParams();
@@ -14,6 +15,11 @@ export default function ModalScreen() {
 
 			{typeof mealAnalysis.image !== "undefined" && (
 					<Image source={{uri: `data:image/jpeg;base64,${mealAnalysis.image}`}} size={"2xl"} className="!w-full" alt={"Yemek Analizi"}/>
+			)}
+			{typeof mealAnalysis.createdAt !== "undefined" && (
+				<Text style={styles.subtitle}>Analiz Tarihi: {mealAnalysis.createdAt}
+					{typeof mealAnalysis.takenAt !== "undefined" && ` / ${adjustTime(mealAnalysis.takenAt)}`}
+				</Text>
 			)}
 			{typeof mealAnalysis.totalCalories !== "undefined" && (
 				<Text style={styles.subtitle}>Toplam Kalori: {mealAnalysis.totalCalories}</Text>

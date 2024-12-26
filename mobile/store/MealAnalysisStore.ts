@@ -31,7 +31,6 @@ export const useMealAnalysisStore = create<MealAnalysisState>((setState, getStat
 	},
 	addMealAnalysis: (mealAnalysis: IMealAnalysis) => {
 		const newMealAnalyses: IMealAnalysis[] = [...getState().mealAnalyses];
-		mealAnalysis.createdAt = moment().toDate().getTime();
 		newMealAnalyses.push(mealAnalysis);
 		AsyncStorage.setItem("mealAnalyses", JSON.stringify(newMealAnalyses));
 		setState((state) => ({ mealAnalyses: newMealAnalyses }));
