@@ -1,0 +1,13 @@
+train: data/datasets/train/images
+val: data/datasets/valid/images
+test: data/datasets/test/images
+
+nc: 29
+names: ['Balik', 'Bezelye', 'BulgurPilavi', 'Cacik', 'Cigkofte', 'Corba', 'Doner', 'Ekmek', 'Eriste', 'EtYemegi', 'Icecek', 'Ispanak', 'Kebap', 'Kofte', 'KuruFasulye', 'Makarna', 'Manti', 'Meyve', 'Meze', 'Nohut', 'Patates', 'Patlican', 'PirincPilavi', 'Pizza', 'Salata', 'Su', 'Tatli', 'Tavuk', 'Yogurt']
+
+roboflow:
+  workspace: tepsi-analiz
+  project: tepsi-analiz
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/tepsi-analiz/tepsi-analiz/dataset/1
